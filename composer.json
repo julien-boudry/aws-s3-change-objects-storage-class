@@ -1,0 +1,24 @@
+{
+    "name": "julien-boudry/aws-s3-change-class",
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "php": ">=7.1.0",
+        "ext-mbstring": "*",
+        "ext-ctype": "*",
+        "ext-json": "*",
+        "aws/aws-sdk-php": "^3.52"
+    },
+    "autoload": {
+        "psr-4": { "julien-boudry\\awsS3ChangeClass\\": "lib/" }
+    },
+    "archive": {
+        "exclude": [
+            "/Tests",
+            "/Documentation",
+            "/Examples",
+            "phpcs.xml.dist",
+            ".travis.yml"
+        ]
+    }
+}
