@@ -10,3 +10,8 @@
     ];
 
     $bucket = '';
+
+    $searchStorageClass = 'REDUCED_REDUNDANCY';
+    $putStorageClass = 'STANDARD';
+
+    $estimatedNumberOfObjects = 230;

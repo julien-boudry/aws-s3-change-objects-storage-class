@@ -1,6 +1,10 @@
 <?php
+    use Aws\Exception\AwsException;
     use Aws\S3\S3Client;
     use Aws\CommandPool;
+    use Aws\CommandInterface;
+    use Aws\ResultInterface;
+    use GuzzleHttp\Promise\PromiseInterface;
 
     require '../vendor/autoload.php';
     require "..".DIRECTORY_SEPARATOR."config.php";
@@ -13,31 +17,55 @@
     $commands = [];
 
     // Use the high-level iterators (returns ALL of your objects).
-    $objects = $s3->getIterator('ListObjects', [
-        'Bucket' => $bucket
+    $commandGenerator = function (S3Client $s3, string $bucket) use ($searchStorageClass, $putStorageClass) {
+        $objects = $s3->getIterator('ListObjects', [
+            'Bucket' => $bucket
+        ]);
+
+        foreach ($objects as $objectInt => $object) :
+            if ($object['StorageClass'] === $searchStorageClass) :
+                echo $object['Key'] . "\n";
+
+                yield $s3->getCommand('CopyObject', [
+                    'Bucket'     => $bucket,
+                    'Key'        => $object['Key'],
+                    'CopySource' => $bucket.'/'.$object['Key'],
+                    'StorageClass' => $putStorageClass,
+                    'TaggingDirective' => 'COPY',
+                ]);
+            endif;
+        endforeach;
+    };
+
+    $commands = $commandGenerator($s3, $bucket);
+
+    echo "Starting\n";
+
+    $success = 0;
+    $fail = 0;
+
+    $pool = new CommandPool($s3, $commands, [
+        'concurrency' => 1000000,
+        'before' => function (CommandInterface $cmd, $iterKey) {
+            echo "About to send: ".$cmd->toArray()['Key'] . "\n";
+        },
+        'fulfilled' => function (
+            ResultInterface $result,
+            $iterKey,
+            PromiseInterface $aggregatePromise
+        ) use(&$success,&$fail,$estimatedNumberOfObjects) {
+            echo "Completed ".++$success."/".($estimatedNumberOfObjects)." (".round($success/$estimatedNumberOfObjects*100,2)."%) : ".$result->get("ObjectURL")."\n";
+
+        },
+        // Invoke this function for each failed transfer.
+        'rejected' => function (
+            AwsException $reason,
+            $iterKey,
+            PromiseInterface $aggregatePromise
+        ) {
+            echo "Failed {$iterKey}: {$reason}\n";
+        },
     ]);
-
-    echo "Keys retrieved!\n";
-    foreach ($objects as $objectInt => $object) :
-        if ($object['StorageClass'] === 'REDUCED_REDUNDANCY') :
-            echo $object['Key'] . "\n";
-
-            $batch = 
-
-            $commands[] = $s3->getCommand('CopyObject', [
-                'Bucket'     => 'qobuz-eu-west-1-bi',
-                'Key'        => 'testStorageClass/'.$object['Key'],
-                'CopySource' => $bucket.'/'.$object['Key'],
-                'StorageClass' => 'STANDARD',
-                'TaggingDirective' => 'COPY',
-            ]);
-        endif;
-    endforeach;
-
-    echo "\n" . count($commands);
-
-    $pool = new CommandPool($s3, $commands, ['concurrency' => 1000000]);
-    unset($commands);
     $promise = $pool->promise();
     $promise->wait();
 
