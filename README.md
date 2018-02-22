@@ -11,5 +11,5 @@ The rewriting of objects is done on the AWS side (invoicing an API PUT COPY comm
 1. Copy config.template.php to config.php
 2. Fill in config
 3. Composer Install
-4. php ``` php Script.php ```
+4. ``` php Script.php ```
 
