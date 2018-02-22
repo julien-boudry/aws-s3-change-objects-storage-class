@@ -1,5 +1,5 @@
 {
-    "name": "julien-boudry/aws-s3-change-class",
+    "name": "julien-boudry/aws-s3-change-objects-storage-class",
     "license": "MIT",
     "type": "library",
     "require": {
@@ -8,9 +8,6 @@
         "ext-ctype": "*",
         "ext-json": "*",
         "aws/aws-sdk-php": "^3.52"
-    },
-    "autoload": {
-        "psr-4": { "julien-boudry\\awsS3ChangeClass\\": "lib/" }
     },
     "archive": {
         "exclude": [

@@ -6,10 +6,10 @@
     use Aws\ResultInterface;
     use GuzzleHttp\Promise\PromiseInterface;
 
-    require '../vendor/autoload.php';
-    require "..".DIRECTORY_SEPARATOR."config.php";
+    require 'vendor/autoload.php';
+    require "config.php";
 
-    ini_set("memory_limit","8192M");
+    ini_set("memory_limit","2048M");
 
     // Instantiate the client.
     $s3 = new S3Client($S3Credential);

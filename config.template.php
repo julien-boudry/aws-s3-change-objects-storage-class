@@ -14,4 +14,5 @@
     $searchStorageClass = 'REDUCED_REDUNDANCY';
     $putStorageClass = 'STANDARD';
 
+    // Only use for progress estimation in logs
     $estimatedNumberOfObjects = 230;
