@@ -14,8 +14,6 @@
     // Instantiate the client.
     $s3 = new S3Client($S3Credential);
 
-    $commands = [];
-
     // Use the high-level iterators (returns ALL of your objects).
     $commandGenerator = function (S3Client $s3, string $bucket) use ($searchStorageClass, $putStorageClass) {
         $objects = $s3->getIterator('ListObjects', [
@@ -54,7 +52,7 @@
             $iterKey,
             PromiseInterface $aggregatePromise
         ) use(&$success,&$fail,$estimatedNumberOfObjects) {
-            echo "Completed ".++$success."/".($estimatedNumberOfObjects)." (".round($success/$estimatedNumberOfObjects*100,2)."%) : ".$result->get("ObjectURL")."\n";
+            echo "Completed ".++$success."/".$estimatedNumberOfObjects." (".round($success/$estimatedNumberOfObjects*100,1)."%) : ".$result->get("ObjectURL")."\n";
 
         },
         // Invoke this function for each failed transfer.
@@ -63,7 +61,7 @@
             $iterKey,
             PromiseInterface $aggregatePromise
         ) {
-            echo "Failed {$iterKey}: {$reason}\n";
+            echo "Failed ".++$fail."/".$estimatedNumberOfObjects.": {$reason}\n";
         },
     ]);
     $promise = $pool->promise();
