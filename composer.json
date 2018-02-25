@@ -3,7 +3,7 @@
     "license": "MIT",
     "type": "library",
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.0.0",
         "ext-mbstring": "*",
         "ext-ctype": "*",
         "ext-json": "*",
