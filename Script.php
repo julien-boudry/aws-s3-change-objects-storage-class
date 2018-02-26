@@ -10,7 +10,8 @@
     require "config.php";
 
     ini_set("memory_limit","2048M");
-    exec('ulimit -S -n 100000'); // try to enforce maximum number concurrent of stream
+    exec('ulimit -H -n 100000'); // try to enforce maximum number concurrent of stream
+    exec('ulimit -S -n 3200'); // try to enforce maximum number concurrent of stream
 
     // Instantiate the client.
     $s3 = new S3Client($S3Credential);
