@@ -62,7 +62,7 @@
             AwsException $reason,
             $iterKey,
             PromiseInterface $aggregatePromise
-        ) {
+        ) use(&$success,&$fail,$estimatedNumberOfObjects) {
             echo "Failed ".++$fail."/".$estimatedNumberOfObjects.": {$reason}\n";
         },
     ]);
