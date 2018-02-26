@@ -40,6 +40,7 @@
     $commands = $commandGenerator($s3, $bucket);
 
     echo "Starting\n";
+    $start_time = time();
 
     $success = 0;
     $fail = 0;
@@ -53,8 +54,8 @@
             ResultInterface $result,
             $iterKey,
             PromiseInterface $aggregatePromise
-        ) use(&$success,&$fail,$estimatedNumberOfObjects) {
-            echo "Completed ".++$success."/".$estimatedNumberOfObjects." (".round($success/$estimatedNumberOfObjects*100,1)."%) : ".$result->get("ObjectURL")."\n";
+        ) use(&$success,&$fail,$estimatedNumberOfObjects,$start_time) {
+            echo " Time: " . ($perf = time() - $start_time) ."s - ".round(++$success/($perf/60),0)."q/m | Completed ".$success."/".$estimatedNumberOfObjects." (".round($success/$estimatedNumberOfObjects*100,1)."%) : ".$result->get("ObjectURL")."\n";
 
         },
         // Invoke this function for each failed transfer.
