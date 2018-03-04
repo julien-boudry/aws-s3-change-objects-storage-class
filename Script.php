@@ -49,15 +49,15 @@
 
     $pool = new CommandPool($s3, $commands, [
         'concurrency' => 1000000,
-        // 'before' => function (CommandInterface $cmd, $iterKey) {
-        //     echo "About to send: ".$cmd->toArray()['Key'] . "\n";
-        // },
         'fulfilled' => function (
             ResultInterface $result,
             $iterKey,
             PromiseInterface $aggregatePromise
         ) use(&$success,&$fail,&$estimatedNumberOfObjects,&$start_time) {
-            echo " Time: " . ($perf = time() - $start_time) ."s - ".round(++$success/($perf/60),0)."q/m | Completed ".$success."/".$estimatedNumberOfObjects." (".round($success/$estimatedNumberOfObjects*100,1)."%) : ".$result->get("ObjectURL")."\n";
+
+            if ((++$success % 1000) === 0) :
+                echo " Time: " . ($perf = time() - $start_time) ."s - ".round($success/($perf/60),0)."q/m | Completed ".$success."/".$estimatedNumberOfObjects." (".round($success/$estimatedNumberOfObjects*100,1)."%) : ".$result->get("ObjectURL")."\n";
+            endif;
 
         },
         // Invoke this function for each failed transfer.
