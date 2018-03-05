@@ -18,10 +18,11 @@
 
     $start_time = null;
     $success = 0;
+    $alreadyDone = 0;
     $fail = 0;
 
     // Use the high-level iterators (returns ALL of your objects).
-    $commandGenerator = function (S3Client $s3, string $bucket) use (&$searchStorageClass, &$putStorageClass, &$start_time) {
+    $commandGenerator = function (S3Client $s3, string $bucket) use (&$searchStorageClass, &$putStorageClass, &$start_time, &$alreadyDone) {
         $objects = $s3->getIterator('ListObjects', [
             'Bucket' => $bucket
         ]);
@@ -39,6 +40,8 @@
                     'StorageClass' => $putStorageClass,
                     'TaggingDirective' => 'COPY',
                 ]);
+            else :
+                ++$alreadyDone;
             endif;
         endforeach;
     };
@@ -53,10 +56,10 @@
             ResultInterface $result,
             $iterKey,
             PromiseInterface $aggregatePromise
-        ) use(&$success,&$fail,&$estimatedNumberOfObjects,&$start_time) {
+        ) use(&$success,&$fail,&$estimatedNumberOfObjects,&$start_time, &$alreadyDone) {
 
             if ((++$success % 1000) === 0) :
-                echo " Time: " . ($perf = time() - $start_time) ."s - ".round($success/($perf/60),0)."q/m | Completed ".$success."/".$estimatedNumberOfObjects." (".round($success/$estimatedNumberOfObjects*100,1)."%) : ".$result->get("ObjectURL")."\n";
+                echo " Time: " . ($perf = time() - $start_time) ."s - ".round($success/($perf/60),0)."q/m | Completed ".($done = $success + $alreadyDone)."/".$estimatedNumberOfObjects." (".round($done/$estimatedNumberOfObjects*100,1)."%) : ".$result->get("ObjectURL")."\n";
             endif;
 
         },
