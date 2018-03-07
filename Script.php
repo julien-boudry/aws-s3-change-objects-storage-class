@@ -22,12 +22,22 @@
     $fail = 0;
 
     // Use the high-level iterators (returns ALL of your objects).
-    $commandGenerator = function (S3Client $s3, string $bucket) use (&$searchStorageClass, &$putStorageClass, &$start_time, &$alreadyDone) {
+    $commandGenerator = function (S3Client $s3, string $bucket) use (&$searchStorageClass, &$putStorageClass, &$start_time, &$alreadyDone, &$start, &$end) {
         $objects = $s3->getIterator('ListObjects', [
             'Bucket' => $bucket
         ]);
 
+        $i = 0;
         foreach ($objects as $objectInt => $object) :
+
+            if ($start !== null || $end !== null) :
+                if (++$i < $start) :
+                    continue;
+                elseif ($end !== null && $i > $end) :
+                    return;
+                endif;
+            endif;
+
             if ($object['StorageClass'] === $searchStorageClass) :
                 if ($start_time === null) :
                     $start_time = time();

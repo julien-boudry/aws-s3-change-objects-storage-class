@@ -16,3 +16,6 @@
 
     // Only use for progress estimation in logs
     $estimatedNumberOfObjects = 230;
+
+    $start = null;
+    $end = null;
