@@ -32,6 +32,7 @@
 
             if ($start !== null || $end !== null) :
                 if (++$i < $start) :
+                    ++$alreadyDone;
                     continue;
                 elseif ($end !== null && $i > $end) :
                     return;
